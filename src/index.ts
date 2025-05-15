@@ -16,7 +16,7 @@ app.get("/books", (req: Request, res: Response) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-    res.json({ message: "Hello TypeScript!" });
+    res.json({ message: "Hello TypeScript!!" });
 });
 
 app.listen(port, "0.0.0.0", () => {
