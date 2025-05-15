@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/api/todos/index.ts",
-    "debug": "nodemon --exec \"node --inspect -r ts-node/register\" src/api/todos/index.ts"
+    "dev": "nodemon src/index.ts",
+    "debug": "nodemon --exec \"node --inspect -r ts-node/register\" src/index.ts"
   },
   "keywords": [],
   "author": "",
