@@ -1,9 +1,17 @@
 {
   "version": 2,
-  "builds": [{ "src": "dist/index.js", "use": "@vercel/node" }],
+  "builds": [
+    {
+      "src": "*.ts",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
-    { "src": "/api/todos", "dest": "dist/index.js" },
-    { "src": "/api/books", "dest": "dist/index.js" },
-    { "src": "/(.*)", "dest": "dist/index.js" }
+    {
+      "src": "/api/(.*)",
+      "dest": "/"
+    }
   ]
 }
+
+
