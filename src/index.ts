@@ -7,11 +7,11 @@ app.use(cors());// Включаем CORS, чтобы разрешить запр
 const todos=[{title:'Express'},{title:'React'}]
 const books=[{volume:'Book1'},{volume:'Book2'}]
 
-app.get("/todos", (req: Request, res: Response) => {
+app.get("/api/todos", (req: Request, res: Response) => {
     res.send(todos);
 });
 
-app.get("/books", (req: Request, res: Response) => {
+app.get("/api/books", (req: Request, res: Response) => {
     res.send(books);
 });
 
