@@ -17,11 +17,8 @@ app.get("/books", (req, res) => {
     res.send(books);
 });
 app.get("/", (req, res) => {
-    res.json({ message: "Hello TypeScript!!" });
+    res.json({ message: "Hello TypeScript!!!" });
 });
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
-// app.listen(port, () => {
-//     console.log(`Server running on http://localhost:${port}`);
-// });
