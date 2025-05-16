@@ -13,6 +13,7 @@ type ObjectType = {
 export type TasksType = {
     taskId: string
     title: string
+    priority:"high" | "medium"| "low"
     isDone: boolean
 }
 
@@ -24,16 +25,16 @@ const todos:ObjectType[]=[
             title: "What to learn",
             filter: "all",
             tasks: [
-                {taskId: v1(), title: "HTML&CSS", isDone: true},
-                {taskId: v1(), title: "JS", isDone: true}
+                {taskId: v1(), title: "HTML&CSS", isDone: true,priority:"high"},
+                {taskId: v1(), title: "JS", isDone: false,priority:"medium"}
             ],
         },
         {
             title: "What to do",
             filter: "all",
             tasks: [
-                {taskId: v1(), title: "HTML&CSS2", isDone: true},
-                {taskId: v1(), title: "JS2", isDone: true}
+                {taskId: v1(), title: "HTML&CSS2", isDone: false,priority:"low"},
+                {taskId: v1(), title: "JS2", isDone: true,priority:"high"}
             ],
         }
 ]

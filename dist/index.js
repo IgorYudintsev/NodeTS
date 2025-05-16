@@ -14,16 +14,16 @@ const todos = [
         title: "What to learn",
         filter: "all",
         tasks: [
-            { taskId: (0, uuid_1.v1)(), title: "HTML&CSS", isDone: true },
-            { taskId: (0, uuid_1.v1)(), title: "JS", isDone: true }
+            { taskId: (0, uuid_1.v1)(), title: "HTML&CSS", isDone: true, priority: "high" },
+            { taskId: (0, uuid_1.v1)(), title: "JS", isDone: false, priority: "medium" }
         ],
     },
     {
         title: "What to do",
         filter: "all",
         tasks: [
-            { taskId: (0, uuid_1.v1)(), title: "HTML&CSS2", isDone: true },
-            { taskId: (0, uuid_1.v1)(), title: "JS2", isDone: true }
+            { taskId: (0, uuid_1.v1)(), title: "HTML&CSS2", isDone: false, priority: "low" },
+            { taskId: (0, uuid_1.v1)(), title: "JS2", isDone: true, priority: "high" }
         ],
     }
 ];
