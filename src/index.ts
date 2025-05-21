@@ -9,6 +9,7 @@ type ObjectType = {
     title: string
     filter: FilterValuesType
     tasks: Array<TasksType>
+    todolistId:string
   }
 export type TasksType = {
     taskId: string
@@ -17,21 +18,23 @@ export type TasksType = {
     isDone: boolean
 }
 
-export type FilterValuesType = "all" | "active" | "completed";
-
+export type KeyFilterType = "all" | "active" | "completed";
+export type FilterValuesType = 'toLearn' | 'toDo'
 
 const todos:ObjectType[]=[
     {
-            title: "What to learn",
-            filter: "all",
-            tasks: [
+        todolistId:v1(),
+        filter:'toLearn',
+        title: "What to learn",
+                 tasks: [
                 {taskId: v1(), title: "HTML&CSS", isDone: true,priority:"high"},
                 {taskId: v1(), title: "JS", isDone: false,priority:"medium"}
             ],
         },
         {
+            todolistId:v1(),
+            filter:'toDo',
             title: "What to do",
-            filter: "all",
             tasks: [
                 {taskId: v1(), title: "HTML&CSS2", isDone: false,priority:"low"},
                 {taskId: v1(), title: "JS2", isDone: true,priority:"high"}
@@ -43,28 +46,29 @@ const books=[{volume:'Book1'},{volume:'Book2'}]
 
 
 app.get("/todos", (req: Request, res: Response) => {
-    res.send(todos);
-});
+    const keyFilter=req.query.keyFilter as KeyFilterType;
 
-app.get("/todos/active", (req: Request, res: Response) => {
-    const activeTodos = todos.map(todo => ({
+    const filteredTasks = todos.map(todo => ({
         ...todo,
-        tasks: todo.tasks.filter(task => !task.isDone)
+        tasks: todo.tasks.filter(task =>keyFilter==='active'? !task.isDone:task.isDone)
     }));
-    res.send(activeTodos);
-});
-
-app.get("/todos/completed", (req, res) => {
-    const completedTodos = todos.map(todo => ({
-        ...todo,
-        tasks: todo.tasks.filter(task => task.isDone)
-    }));
-    res.send(completedTodos);
+    if (keyFilter === "active" || keyFilter === "completed") {
+        res.send(filteredTasks);
+    } else {
+        res.status(404).send("Not Found");
+    }
 });
 
 
-
-
+app.get("/todos/:filterValue", (req: Request, res: Response) => {
+    const filterValue=req.params.filterValue as FilterValuesType
+    const filteredTodos = todos.filter(todo => todo.filter === filterValue);
+    if (filterValue === "toLearn" || filterValue === "toDo") {
+        res.send(filteredTodos);
+    } else {
+        res.status(404).send("Not Found. Invalid filter. Use 'toLearn' or 'toDo");
+    }
+});
 
 
 app.get("/books", (req: Request, res: Response) => {
