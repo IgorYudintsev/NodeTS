@@ -31,6 +31,14 @@ const books = [{ volume: 'Book1' }, { volume: 'Book2' }];
 app.get("/todos", (req, res) => {
     res.send(todos);
 });
+app.get("/todos/active", (req, res) => {
+    const activeTodos = todos.map(todo => (Object.assign(Object.assign({}, todo), { tasks: todo.tasks.filter(task => !task.isDone) })));
+    res.send(activeTodos);
+});
+app.get("/todos/completed", (req, res) => {
+    const completedTodos = todos.map(todo => (Object.assign(Object.assign({}, todo), { tasks: todo.tasks.filter(task => task.isDone) })));
+    res.send(completedTodos);
+});
 app.get("/books", (req, res) => {
     res.send(books);
 });
