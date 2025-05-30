@@ -1,194 +1,123 @@
-import  {Request, Response, Router} from "express";
-import {v1} from "uuid";
+import express, {NextFunction, Request, Response, Router} from "express";
+import {todosRepository} from "../repositories/todos-repositories";
+
 export const todosRouter = Router()
 
-type ObjectType = {
-    title: string
-    tasks: Array<TasksType>
-    todolistId: string
-}
-export type TasksType = {
-    taskId: string
-    title: string
-    priority: "high" | "medium" | "low"
-    isDone: boolean
-}
-export type KeyFilterType = "all" | "active" | "completed";
+const app = express();
+import {body, param, query, validationResult} from 'express-validator';
+import {textfieldValidationMidleware} from "../midlewares/textfieldValidationMidleware";
+import {idValidation, priorityValidation, titleValidation} from "../midlewares/validations";
+import {switchErrors} from "../midlewares/switchErrors";
 
+app.use(express.json());
+app.use(express.urlencoded({extended: true})); // для парсинга URL-encoded тела запроса
 
-const todos: ObjectType[] = [
-    {
-        todolistId: v1(),
-        title: "Monday",
-        tasks: [
-            {taskId: v1(), title: "HTML&CSS", isDone: true, priority: "high"},
-            {taskId: v1(), title: "JS", isDone: false, priority: "medium"}
-        ],
-    },
-    {
-        todolistId: v1(),
-        title: "Tuesday",
-        tasks: [
-            {taskId: v1(), title: "HTML&CSS2", isDone: false, priority: "low"},
-            {taskId: v1(), title: "JS2", isDone: true, priority: "high"}
-        ],
-    }
-]
 
 todosRouter.get("/", (req: Request, res: Response) => {
-    if (!todos || todos.length === 0) {
+    const foundTodos = todosRepository.getTodos()
+    if (!foundTodos || foundTodos.length === 0) {
         res.status(404).send("No todos found");
     } else {
-        res.send(todos);
+        res.send(foundTodos);
     }
 });
 
-todosRouter.post("/task", (req: Request, res: Response) => {
-    try {
-        // Валидация
-        if (!req.body) {
-            res.status(400).json({error: "Request body is missing"});
-            return;
+todosRouter.post("/",
+    titleValidation,
+    textfieldValidationMidleware,
+    (req: Request, res: Response) => {
+        const {title} = req.body;
+        const postedTodos = todosRepository.postTodo(title)
+        if (postedTodos) {
+            res.status(201).json(postedTodos);
+        } else {
+            res.status(500).json({error: "Internal server error"});
         }
+    });
 
-        const {todolistId, title, priority = "medium"} = req.body;
+todosRouter.post("/task",
+    titleValidation,
+    idValidation,
+    priorityValidation,
+    textfieldValidationMidleware,
+    (req: Request, res: Response) => {
+        const {id, title, priority = "medium"} = req.body;
 
-        if (!todolistId) {
-            res.status(400).json({error: "Todolist ID is required"});
-            return;
+        try {
+            const postedTask = todosRepository.postTask(id, title, priority)
+            if (!postedTask) {
+                res.status(404).json({error: "Todolist not found"});
+                return;
+            }
+            res.status(201).json(postedTask);
+
+        } catch (error) {
+            console.error("Error creating todo list:", error);
+            res.status(500).json({error: "Internal server error"});
         }
-
-        if (!title?.trim()) {
-            res.status(400).json({error: "Title is required"});
-            return;
-        }
-
-        const validPriorities = ["high", "medium", "low"];
-        if (priority && !validPriorities.includes(priority)) {
-            res.status(400).json({error: "Invalid priority value"});
-            return;
-        }
-
-        // Создание нового списка
-        const newTask: TasksType = {
-            taskId: v1(),
-            title: title.trim(),
-            isDone: false,
-            priority: priority as "high" | "medium" | "low"
-        };
-
-        // Находим нужный todolist и добавляем задачу
-        const todoList = todos.find(el => el.todolistId === todolistId);
-
-        if (!todoList) {
-            res.status(404).json({error: "Todolist not found"});
-            return;
-        }
-
-        todoList.tasks.push(newTask);
-        res.status(201).json(newTask);
-
-    } catch (error) {
-        console.error("Error creating todo list:", error);
-        res.status(500).json({error: "Internal server error"});
-    }
-});
+    });
 
 todosRouter.delete("/:id", (req: Request, res: Response) => {
-    let currentTodo = todos.find(el => el.todolistId === req.params.id);
-    if (currentTodo) {
-        todos.splice(todos.indexOf(currentTodo), 1);
-        res.send(todos);
+    const todosAfterRemove = todosRepository.deleteTodo(req.params.id)
+    if (todosAfterRemove) {
+        res.send(todosAfterRemove);
     } else {
         res.status(404).json({message: "Todo Not Found"});
     }
 });
 
 todosRouter.delete("/:todolistID/tasks/:taskID", (req: Request, res: Response) => {
-    let currentTodo = todos.find(el => el.todolistId === req.params.todolistID);
-    if (currentTodo) {
-        let currentTask = currentTodo.tasks.find(el => el.taskId === req.params.taskID)
-        if (currentTask) {
-            currentTodo.tasks.splice(currentTodo.tasks.indexOf(currentTask), 1);
-            res.send(todos);
-        } else {
-            res.status(404).json({message: "Task Not Found"});
+    try {
+        const {todolistID, taskID} = req.params;
+        const result = todosRepository.deleteTask(todolistID, taskID);
+        res.send(result);
+    } catch (error) {
+        if (!(error instanceof Error)) {
+            res.status(500).json({message: "Unknown error occurred"});
+            return;
         }
-    } else {
-        res.status(404).json({message: "Todo Not Found"});
+        switchErrors(res,error.message)
     }
 });
 
-todosRouter.put("/:id", (req: Request, res: Response) => {
+
+todosRouter.put("/:id",
+    titleValidation,
+    (req: Request, res: Response) => {
+
     try {
-        if (!req.body) {
-            res.status(400).json({error: "Request body is missing"});
-            return;
-        }
-
         const {title} = req.body;
-
-        if (!title?.trim()) {
-            res.status(400).json({error: "Title is required"});
-            return;
-        }
-
-        const currentTodo = todos.find(el => el.todolistId === req.params.id);
-
-        if (currentTodo) {
-            currentTodo.title = title.trim();
-            res.status(200).json(todos);
+        const updatedTodo = todosRepository.putTodo(req.params.id, title)
+        if (updatedTodo) {
+            res.status(200).json(updatedTodo);
         } else {
             res.status(404).json({message: "Todo Not Found"});
         }
-
     } catch (error) {
-        console.error("Error updating todo list:", error);
-        res.status(500).json({error: "Internal server error"});
+           res.status(500).json({error: "Internal server error"});
     }
 });
 
-todosRouter.put("/:todolistID/tasks/:taskID", (req: Request, res: Response) => {
+todosRouter.put("/:todolistID/tasks/:taskID",
+    titleValidation,
+    textfieldValidationMidleware,
+    (req: Request, res: Response) => {
     try {
-        if (!req.body) {
-            res.status(400).json({error: "Request body is missing"});
-            return;
-        }
-
+        const {todolistID, taskID} = req.params;
         const {title} = req.body;
-        if (!title?.trim()) {
-            res.status(400).json({error: "Title is required"});
-            return;
-        }
-        const currentTodo = todos.find(el => el.todolistId === req.params.todolistID);
 
-        if (currentTodo) {
-            let currentTask = currentTodo.tasks.find(el => el.taskId === req.params.taskID)
-            if (currentTask) {
-                currentTask.title = title.trim();
-                res.status(200).json(todos);
-            } else {
-                res.status(404).json({message: "Task Not Found"});
-            }
-        } else {
-            res.status(404).json({message: "Todo Not Found"});
-        }
+        const updatedTodos = todosRepository.putTask(todolistID, taskID, title);
+        res.status(200).json(updatedTodos);
 
     } catch (error) {
-        console.error("Error updating todo list:", error);
-        res.status(500).json({error: "Internal server error"});
+        if (error instanceof Error) {
+            switchErrors(res,error.message)
+         } else {
+            console.error("Unknown error updating task:", error);
+            res.status(500).json({error: "Internal server error"});
+        }
     }
 });
 
 
 
-
-// app.get("/todos/:filterValue", (req: Request, res: Response) => {
-//     const filterValue=req.params.filterValue as FilterValuesType
-//     const filteredTodos = todos.filter(todo => todo.filter === filterValue);
-//     if (filterValue === "toLearn" || filterValue === "toDo") {
-//         res.send(filteredTodos);
-//     } else {
-//         res.status(404).send("Not Found. Invalid filter. Use 'toLearn' or 'toDo");
-//     }
-// });
