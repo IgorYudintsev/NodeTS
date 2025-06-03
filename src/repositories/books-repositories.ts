@@ -1,4 +1,9 @@
-const books = [{
+export type BookType={
+    id: number,
+    volume: string
+}
+
+const books:BookType[] = [{
     id: 1,
     volume: 'Book1'
 }, {
@@ -7,21 +12,22 @@ const books = [{
 }]
 
 export  const booksRepository={
-    getBooks(){
+      async  getBooks():Promise<BookType[]> {
         return books;
     },
 
-    postBooks( volume: string) {
+  async  postBooks( volume: string):Promise<BookType> {
         const newBook = {id: 3, volume};
         books.push(newBook);
-        return newBook;
+        return newBook ;
     },
 
-    deleteBooks( id: string) {
+   async deleteBooks( id: string):Promise<BookType[]> {
         const currentBook = books.find(el => el.id === Number(id));
         if (currentBook) {
             books.splice(books.indexOf(currentBook), 1);
-            return books
         }
+       return books
+
     }
 }

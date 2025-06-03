@@ -32,6 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.todosRouter = void 0;
 const express_1 = __importStar(require("express"));
@@ -43,29 +52,29 @@ const validations_1 = require("../midlewares/validations");
 const switchErrors_1 = require("../midlewares/switchErrors");
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true })); // для парсинга URL-encoded тела запроса
-exports.todosRouter.get("/", (req, res) => {
-    const foundTodos = todos_repositories_1.todosRepository.getTodos();
+exports.todosRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const foundTodos = yield todos_repositories_1.todosRepository.getTodos();
     if (!foundTodos || foundTodos.length === 0) {
         res.status(404).send("No todos found");
     }
     else {
         res.send(foundTodos);
     }
-});
-exports.todosRouter.post("/", validations_1.titleValidation, textfieldValidationMidleware_1.textfieldValidationMidleware, (req, res) => {
+}));
+exports.todosRouter.post("/", validations_1.titleValidation, textfieldValidationMidleware_1.textfieldValidationMidleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { title } = req.body;
-    const postedTodos = todos_repositories_1.todosRepository.postTodo(title);
+    const postedTodos = yield todos_repositories_1.todosRepository.postTodo(title);
     if (postedTodos) {
         res.status(201).json(postedTodos);
     }
     else {
         res.status(500).json({ error: "Internal server error" });
     }
-});
-exports.todosRouter.post("/task", validations_1.titleValidation, validations_1.idValidation, validations_1.priorityValidation, textfieldValidationMidleware_1.textfieldValidationMidleware, (req, res) => {
+}));
+exports.todosRouter.post("/task", validations_1.titleValidation, validations_1.idValidation, validations_1.priorityValidation, textfieldValidationMidleware_1.textfieldValidationMidleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id, title, priority = "medium" } = req.body;
     try {
-        const postedTask = todos_repositories_1.todosRepository.postTask(id, title, priority);
+        const postedTask = yield todos_repositories_1.todosRepository.postTask(id, title, priority);
         if (!postedTask) {
             res.status(404).json({ error: "Todolist not found" });
             return;
@@ -76,20 +85,20 @@ exports.todosRouter.post("/task", validations_1.titleValidation, validations_1.i
         console.error("Error creating todo list:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-});
-exports.todosRouter.delete("/:id", (req, res) => {
-    const todosAfterRemove = todos_repositories_1.todosRepository.deleteTodo(req.params.id);
+}));
+exports.todosRouter.delete("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const todosAfterRemove = yield todos_repositories_1.todosRepository.deleteTodo(req.params.id);
     if (todosAfterRemove) {
         res.send(todosAfterRemove);
     }
     else {
         res.status(404).json({ message: "Todo Not Found" });
     }
-});
-exports.todosRouter.delete("/:todolistID/tasks/:taskID", (req, res) => {
+}));
+exports.todosRouter.delete("/:todolistID/tasks/:taskID", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { todolistID, taskID } = req.params;
-        const result = todos_repositories_1.todosRepository.deleteTask(todolistID, taskID);
+        const result = yield todos_repositories_1.todosRepository.deleteTask(todolistID, taskID);
         res.send(result);
     }
     catch (error) {
@@ -99,11 +108,11 @@ exports.todosRouter.delete("/:todolistID/tasks/:taskID", (req, res) => {
         }
         (0, switchErrors_1.switchErrors)(res, error.message);
     }
-});
-exports.todosRouter.put("/:id", validations_1.titleValidation, (req, res) => {
+}));
+exports.todosRouter.put("/:id", validations_1.titleValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { title } = req.body;
-        const updatedTodo = todos_repositories_1.todosRepository.putTodo(req.params.id, title);
+        const updatedTodo = yield todos_repositories_1.todosRepository.putTodo(req.params.id, title);
         if (updatedTodo) {
             res.status(200).json(updatedTodo);
         }
@@ -114,12 +123,12 @@ exports.todosRouter.put("/:id", validations_1.titleValidation, (req, res) => {
     catch (error) {
         res.status(500).json({ error: "Internal server error" });
     }
-});
-exports.todosRouter.put("/:todolistID/tasks/:taskID", validations_1.titleValidation, textfieldValidationMidleware_1.textfieldValidationMidleware, (req, res) => {
+}));
+exports.todosRouter.put("/:todolistID/tasks/:taskID", validations_1.titleValidation, textfieldValidationMidleware_1.textfieldValidationMidleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { todolistID, taskID } = req.params;
         const { title } = req.body;
-        const updatedTodos = todos_repositories_1.todosRepository.putTask(todolistID, taskID, title);
+        const updatedTodos = yield todos_repositories_1.todosRepository.putTask(todolistID, taskID, title);
         res.status(200).json(updatedTodos);
     }
     catch (error) {
@@ -131,4 +140,4 @@ exports.todosRouter.put("/:todolistID/tasks/:taskID", validations_1.titleValidat
             res.status(500).json({ error: "Internal server error" });
         }
     }
-});
+}));

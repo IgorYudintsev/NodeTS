@@ -1,6 +1,7 @@
 import {v1} from "uuid";
+import {BookType} from "./books-repositories";
 
-type ObjectType = {
+export type ObjectType = {
     title: string
     tasks: Array<TasksType>
     todolistId: string
@@ -33,11 +34,11 @@ const todos: ObjectType[] = [
     }
 ]
 export  const todosRepository={
-    getTodos(){
+    async getTodos():Promise<ObjectType[]>{
         return todos;
     },
 
-    postTodo( title: string) {
+   async postTodo( title: string):Promise<ObjectType[]> {
         const newTodoList: ObjectType = {
             todolistId: v1(),
             title: title.trim(),
@@ -47,7 +48,7 @@ export  const todosRepository={
         return todos
     },
 
-    postTask(todolistId:string, title: string,priority:"high" | "medium" | "low") {
+   async postTask(todolistId:string, title: string,priority:"high" | "medium" | "low"):Promise<TasksType | null> {
         const newTask: TasksType = {
             taskId: v1(),
             title: title.trim(),
@@ -64,15 +65,17 @@ export  const todosRepository={
         }
     },
 
-    deleteTodo( id: string) {
+   async deleteTodo( id: string):Promise<ObjectType[] | null> {
         let currentTodo = todos.find(el => el.todolistId === id);
         if (currentTodo) {
             todos.splice(todos.indexOf(currentTodo), 1);
             return todos
+        }else{
+            return null
         }
      },
 
-    deleteTask(todolistID: string, taskID: string) {
+    async deleteTask(todolistID: string, taskID: string):Promise<ObjectType[]> {
         let currentTodo = todos.find(el => el.todolistId === todolistID);
         if (!currentTodo) {
             throw new Error("Todo Not Found");
@@ -87,15 +90,15 @@ export  const todosRepository={
         return todos;
     },
 
-    putTodo(todolistID: string,title: string){
+   async putTodo(todolistID: string,title: string):Promise<ObjectType[]>{
         const currentTodo = todos.find(el => el.todolistId === todolistID);
         if (currentTodo) {
             currentTodo.title = title.trim();
-            return todos
         }
+       return todos
     },
 
-    putTask(todolistID: string, taskID: string, title: string) {
+    async putTask(todolistID: string, taskID: string, title: string):Promise<ObjectType[]> {
         const currentTodo = todos.find(el => el.todolistId === todolistID);
         if (!currentTodo) {
             throw new Error("Todo Not Found");

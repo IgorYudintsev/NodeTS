@@ -32,6 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.booksRouter = void 0;
 const express_1 = __importStar(require("express"));
@@ -41,26 +50,25 @@ const app = (0, express_1.default)();
 const express_validator_1 = require("express-validator");
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true })); // для парсинга URL-encoded тела запроса
-exports.booksRouter.get("/", (req, res) => {
-    const foundBooks = books_repositories_1.booksRepository.getBooks();
-    console.log(foundBooks);
+exports.booksRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const foundBooks = yield books_repositories_1.booksRepository.getBooks();
     res.send(foundBooks);
-});
-exports.booksRouter.post("/", (0, express_validator_1.body)('volume').isLength({ min: 3, max: 30 }), (req, res) => {
+}));
+exports.booksRouter.post("/", (0, express_validator_1.body)('volume').isLength({ min: 3, max: 30 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
         res.status(400).json({ error: "Invalid volume: min:1, max:30" });
     }
     const { volume } = req.body;
-    const newBook = books_repositories_1.booksRepository.postBooks(volume);
-    res.status(201).json(newBook);
-});
-exports.booksRouter.delete("/:id", (req, res) => {
-    let currentBook = books_repositories_1.booksRepository.deleteBooks(req.params.id);
+    const newBookPromise = yield books_repositories_1.booksRepository.postBooks(volume);
+    res.status(201).json(newBookPromise);
+}));
+exports.booksRouter.delete("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let currentBook = yield books_repositories_1.booksRepository.deleteBooks(req.params.id);
     if (currentBook) {
         res.send(currentBook);
     }
     else {
         res.status(404).json({ message: "Book Not Found" });
     }
-});
+}));
