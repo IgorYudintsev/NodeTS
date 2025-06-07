@@ -24,6 +24,9 @@ app.use(express_1.default.json());
 app.get("/", (req, res) => {
     res.json({ message: "Hello TypeScript!!!" });
 });
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end(); // 204 No Content — ответ без содержимого
+});
 app.use("/books", books_router_1.booksRouter);
 app.use("/todos", todos_router_1.todosRouter);
 function startApp() {
