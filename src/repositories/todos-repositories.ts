@@ -1,5 +1,5 @@
 import {v1} from "uuid";
-import {BookType} from "./books-repositories";
+import {BookType} from "./booksRepositories";
 
 export type ObjectType = {
     title: string

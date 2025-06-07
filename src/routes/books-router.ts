@@ -3,7 +3,7 @@ export const booksRouter = Router()
 
 const app = express();
 import {body, param, query, validationResult} from 'express-validator';
-import {booksRepositories, BookType} from "../repositories/books-repositories";
+import {booksRepositories, BookType} from "../repositories/booksRepositories";
 
 
 
