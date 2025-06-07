@@ -48,13 +48,13 @@ const express_1 = __importStar(require("express"));
 exports.booksRouter = (0, express_1.Router)();
 const app = (0, express_1.default)();
 const express_validator_1 = require("express-validator");
+const books_repositories_1 = require("../repositories/books-repositories");
 // import {booksDBRepository, BookType} from "../repositories/booksDB-repositories";
-const booksDB_repositories_1 = require("../repositories/booksDB-repositories");
-// import {booksRepository} from "../repositories/books-repositories";
+// import { booksDBRepositories, BookType } from "../repositories/booksDB-repositories";
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true })); // для парсинга URL-encoded тела запроса
 exports.booksRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const foundBooks = yield booksDB_repositories_1.booksDBRepositories.getBooks();
+    const foundBooks = yield books_repositories_1.booksRepositories.getBooks();
     res.send(foundBooks);
 }));
 exports.booksRouter.post("/", (0, express_validator_1.body)('volume').isLength({ min: 3, max: 30 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -63,11 +63,11 @@ exports.booksRouter.post("/", (0, express_validator_1.body)('volume').isLength({
         res.status(400).json({ error: "Invalid volume: min:1, max:30" });
     }
     const { volume } = req.body;
-    const newBookPromise = yield booksDB_repositories_1.booksDBRepositories.postBooks(volume);
+    const newBookPromise = yield books_repositories_1.booksRepositories.postBooks(volume);
     res.status(201).json(newBookPromise);
 }));
 exports.booksRouter.delete("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let currentBook = yield booksDB_repositories_1.booksDBRepositories.deleteBooks(req.params.id);
+    let currentBook = yield books_repositories_1.booksRepositories.deleteBooks(req.params.id);
     if (currentBook) {
         res.send(currentBook);
     }
