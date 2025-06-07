@@ -5,7 +5,7 @@ export const booksRouter = Router()
 const app = express();
 import {body, param, query, validationResult} from 'express-validator';
 // import {booksDBRepository, BookType} from "../repositories/booksDB-repositories";
-import { booksDBRepository, BookType } from "../repositories/booksDB-repositories";
+import { booksDBRepositories, BookType } from "../repositories/booksDB-repositories";
 
 import {booksRepository} from "../repositories/books-repositories";
 // import {booksRepository} from "../repositories/books-repositories";
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // для парсинга URL-encoded тела запроса
 
 booksRouter.get("/", async (req: Request, res: Response) => {
-    const foundBooks: BookType[] = await booksDBRepository.getBooks()
+    const foundBooks: BookType[] = await booksDBRepositories.getBooks()
     res.send(foundBooks);
 });
 
@@ -27,13 +27,13 @@ booksRouter.post("/",
         }
 
     const { volume} = req.body as {  volume: string };
-    const newBookPromise:BookType= await booksDBRepository.postBooks(volume)
+    const newBookPromise:BookType= await booksDBRepositories.postBooks(volume)
     res.status(201).json(newBookPromise);
 });
 
 
 booksRouter.delete("/:id", async (req: Request, res: Response) => {
-    let currentBook = await booksDBRepository.deleteBooks(req.params.id)
+    let currentBook = await booksDBRepositories.deleteBooks(req.params.id)
     if (currentBook) {
              res.send(currentBook);
     } else {
