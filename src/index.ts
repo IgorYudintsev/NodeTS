@@ -3,7 +3,8 @@ import cors from "cors";
 import {booksRouter} from "./routes/books-router";
 import {todosRouter} from "./routes/todos-router";
 import {client, runDb} from "./repositories/db";
-import {BookType} from "./repositories/booksDB-repositories";
+import {BookType} from "./repositories/books-repositories";
+
 
 
 const app = express();

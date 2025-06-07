@@ -44,13 +44,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.booksRouter = void 0;
 const express_1 = __importStar(require("express"));
-// import {booksRepository, BookType} from "../repositories/books-repositories";
 exports.booksRouter = (0, express_1.Router)();
 const app = (0, express_1.default)();
 const express_validator_1 = require("express-validator");
 const books_repositories_1 = require("../repositories/books-repositories");
-// import {booksDBRepository, BookType} from "../repositories/booksDB-repositories";
-// import { booksDBRepositories, BookType } from "../repositories/booksDB-repositories";
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true })); // для парсинга URL-encoded тела запроса
 exports.booksRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
