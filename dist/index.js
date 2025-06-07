@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 });
 app.use('/books', books_router_1.booksRouter);
 app.use('/todos', todos_router_1.todosRouter);
-const currentDB = db_1.client.db('books');
+const currentDB = db_1.client.db('kiberRus');
 exports.currentCollection = currentDB.collection('books');
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.runDb)();

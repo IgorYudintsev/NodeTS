@@ -20,7 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use('/books',booksRouter)
 app.use('/todos',todosRouter)
 
-const currentDB=client.db('books')
+const currentDB=client.db('kiberRus')
 export  const currentCollection=currentDB.collection<BookType>('books')
 
 const startApp = async () => {
