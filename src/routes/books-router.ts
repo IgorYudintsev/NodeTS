@@ -4,7 +4,9 @@ export const booksRouter = Router()
 
 const app = express();
 import {body, param, query, validationResult} from 'express-validator';
-import {booksDBRepository, BookType} from "../repositories/booksDB-repositories";
+// import {booksDBRepository, BookType} from "../repositories/booksDB-repositories";
+import { booksDBRepository, BookType } from "../repositories/booksDB-repositories.js";
+
 import {booksRepository} from "../repositories/books-repositories";
 // import {booksRepository} from "../repositories/books-repositories";
 app.use(express.json());
