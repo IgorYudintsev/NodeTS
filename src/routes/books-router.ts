@@ -1,13 +1,10 @@
 import express, {Request, Response, Router} from "express";
-// import {booksRepository, BookType} from "../repositories/books-repositories";
 export const booksRouter = Router()
 
 const app = express();
 import {body, param, query, validationResult} from 'express-validator';
 import {booksRepositories, BookType} from "../repositories/books-repositories";
-import {booksDBRepositories} from "../repositories/booksDB-repositories";
-// import {booksDBRepository, BookType} from "../repositories/booksDB-repositories";
-// import { booksDBRepositories, BookType } from "../repositories/booksDB-repositories";
+
 
 
 app.use(express.json());
