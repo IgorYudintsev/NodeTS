@@ -44,14 +44,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.booksRouter = void 0;
 const express_1 = __importStar(require("express"));
+// import {booksRepository, BookType} from "../repositories/books-repositories";
 exports.booksRouter = (0, express_1.Router)();
 const app = (0, express_1.default)();
 const express_validator_1 = require("express-validator");
-const { booksRepositories, BookType } = require('../repositories/booksRepositories');
+// import {booksDBRepository, BookType} from "../repositories/booksDB-repositories";
+const booksDB_repositories_1 = require("../repositories/booksDB-repositories");
+// import {booksRepository} from "../repositories/books-repositories";
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true })); // для парсинга URL-encoded тела запроса
 exports.booksRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const foundBooks = yield booksRepositories.getBooks();
+    const foundBooks = yield booksDB_repositories_1.booksDBRepository.getBooks();
     res.send(foundBooks);
 }));
 exports.booksRouter.post("/", (0, express_validator_1.body)('volume').isLength({ min: 3, max: 30 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -60,11 +63,11 @@ exports.booksRouter.post("/", (0, express_validator_1.body)('volume').isLength({
         res.status(400).json({ error: "Invalid volume: min:1, max:30" });
     }
     const { volume } = req.body;
-    const newBookPromise = yield booksRepositories.postBooks(volume);
+    const newBookPromise = yield booksDB_repositories_1.booksDBRepository.postBooks(volume);
     res.status(201).json(newBookPromise);
 }));
 exports.booksRouter.delete("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let currentBook = yield booksRepositories.deleteBooks(req.params.id);
+    let currentBook = yield booksDB_repositories_1.booksDBRepository.deleteBooks(req.params.id);
     if (currentBook) {
         res.send(currentBook);
     }
